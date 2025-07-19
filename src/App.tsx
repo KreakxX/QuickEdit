@@ -4,6 +4,8 @@ import type React from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FaChevronDown, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
 import {
   type File,
   FileText,
@@ -14,8 +16,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { LiveProvider, LiveEditor, LiveError } from "react-live";
-import { themes } from "prism-react-renderer";
+
 import { useEffect, useRef, useState } from "react";
 import {
   SiC,
@@ -60,8 +61,6 @@ import {
 import * as monaco from "monaco-editor";
 import { VscFolder, VscFolderOpened } from "react-icons/vsc";
 import MonacoEditor from "@monaco-editor/react";
-import { Terminal } from "xterm";
-import TerminalView from "./Terminal";
 
 export default function Component() {
   const [projectTree, setProjectTree] = useState<any>({});
@@ -221,7 +220,7 @@ export default function Component() {
       return (
         <div key={currentPath}>
           <div
-            className="flex items-center gap-2 p-1 text-white hover:bg-gray-700 cursor-pointer rounded-sm"
+            className="ml-3 flex items-center gap-2 p-1 text-white hover:bg-gray-700 cursor-pointer rounded-sm"
             style={{ paddingLeft: depth * 16 }}
             onClick={() => {
               if (isFile) {
@@ -234,9 +233,15 @@ export default function Component() {
             {isFile ? (
               getFileIcon(key)
             ) : isExpanded ? (
-              <VscFolderOpened size={16} color="#c5c5c5" />
+              <div className="flex justify-between">
+                <FaChevronDown color="#71717a"></FaChevronDown>
+                <VscFolderOpened size={16} color="#c5c5c5" />{" "}
+              </div>
             ) : (
-              <VscFolder size={16} color="#c5c5c5" />
+              <div className="flex justify-between">
+                <FaChevronRight color="#71717a"></FaChevronRight>
+                <VscFolder size={16} color="#c5c5c5" />{" "}
+              </div>
             )}
             <span className="text-sm truncate">{key}</span>
           </div>
@@ -365,7 +370,7 @@ export default function Component() {
     <div className="h-screen w-full bg-black flex flex-col">
       <div className="flex-1 flex min-h-0">
         {/* Sidebar */}
-        <div className="w-64 lg:w-80 border-r border-neutral-800 bg-neutral-950 flex-shrink-0">
+        <div className="w-64 lg:w-80 border-r border-neutral-800 bg-neutral-800 flex-shrink-0">
           <div className="p-3 border-b border-neutral-800">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium text-white">Explorer</span>
@@ -383,13 +388,6 @@ export default function Component() {
                     } as any)}
                   />
                 </label>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 text-white hover:bg-neutral-800 rounded-md"
-                >
-                  <FolderOpen className="h-3 w-3" />
-                </Button>
               </div>
             </div>
           </div>
