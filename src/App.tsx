@@ -1,23 +1,13 @@
 "use client";
-
 import type React from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FaChevronDown, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 
-import {
-  type File,
-  FileText,
-  FolderOpen,
-  Play,
-  Plus,
-  Users,
-  X,
-  Zap,
-} from "lucide-react";
+import { FileText, Play, Plus, Users, X, Zap } from "lucide-react";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   SiC,
   SiDocker,
@@ -59,8 +49,8 @@ import {
   FaFile,
 } from "react-icons/fa";
 import * as monaco from "monaco-editor";
-import { VscFolder, VscFolderOpened } from "react-icons/vsc";
 import MonacoEditor from "@monaco-editor/react";
+import { Textarea } from "./components/ui/textarea";
 
 export default function Component() {
   const [projectTree, setProjectTree] = useState<any>({});
@@ -234,13 +224,11 @@ export default function Component() {
               getFileIcon(key)
             ) : isExpanded ? (
               <div className="flex justify-between">
-                <FaChevronDown color="#71717a"></FaChevronDown>
-                <VscFolderOpened size={16} color="#c5c5c5" />{" "}
+                <FaChevronDown size={13} color="#71717a"></FaChevronDown>
               </div>
             ) : (
               <div className="flex justify-between">
-                <FaChevronRight color="#71717a"></FaChevronRight>
-                <VscFolder size={16} color="#c5c5c5" />{" "}
+                <FaChevronRight size={13} color="#71717a"></FaChevronRight>
               </div>
             )}
             <span className="text-sm truncate">{key}</span>
@@ -259,62 +247,22 @@ export default function Component() {
     setCurrentFile(null);
   };
 
-  self.MonacoEnvironment = {
-    getWorker: function (workerId, label) {
-      const getWorkerModule = (moduleUrl: any, label: any) => {
-        const workerUrl = self.MonacoEnvironment?.getWorkerUrl
-          ? self.MonacoEnvironment.getWorkerUrl(moduleUrl, label)
-          : moduleUrl;
+  const handleEditorDidMount = (
+    editor: monaco.editor.IStandaloneCodeEditor,
+    monacoInstance: typeof monaco
+  ) => {
+    monacoInstance.languages.typescript.typescriptDefaults.setCompilerOptions({
+      target: monacoInstance.languages.typescript.ScriptTarget.ES2020,
+      allowNonTsExtensions: true,
+      jsx: monacoInstance.languages.typescript.JsxEmit.ReactJSX,
+      allowJs: true,
+      esModuleInterop: true,
+      module: monacoInstance.languages.typescript.ModuleKind.ESNext,
+    });
 
-        return new Worker(workerUrl, {
-          name: label,
-          type: "module",
-        });
-      };
-
-      switch (label) {
-        case "json":
-          return getWorkerModule(
-            "/monaco-editor/esm/vs/language/json/json.worker?worker",
-            label
-          );
-        case "css":
-        case "scss":
-        case "less":
-          return getWorkerModule(
-            "/monaco-editor/esm/vs/language/css/css.worker?worker",
-            label
-          );
-        case "html":
-        case "handlebars":
-        case "razor":
-          return getWorkerModule(
-            "/monaco-editor/esm/vs/language/html/html.worker?worker",
-            label
-          );
-        case "typescript":
-        case "javascript":
-          return getWorkerModule(
-            "/monaco-editor/esm/vs/language/typescript/ts.worker?worker",
-            label
-          );
-        default:
-          return getWorkerModule(
-            "/monaco-editor/esm/vs/editor/editor.worker?worker",
-            label
-          );
-      }
-    },
+    console.log("Monaco konfiguriert mit JSX-Theme!");
   };
 
-  // Configure TypeScript for JSX support
-  monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-    target: monaco.languages.typescript.ScriptTarget.ES2020,
-    allowNonTsExtensions: true,
-    jsx: monaco.languages.typescript.JsxEmit.React, // Enable JSX!
-    allowJs: true,
-    esModuleInterop: true,
-  });
   const getLanguage = () => {
     const fileExtension = currentFile?.fileName.split(".").pop()?.toLowerCase();
     console.log(fileExtension);
@@ -361,16 +309,13 @@ export default function Component() {
       case "sh":
       case "bash":
         return "shell";
-      default:
-        return "plaintext";
     }
   };
-
   return (
     <div className="h-screen w-full bg-black flex flex-col">
       <div className="flex-1 flex min-h-0">
         {/* Sidebar */}
-        <div className="w-64 lg:w-80 border-r border-neutral-800 bg-neutral-800 flex-shrink-0">
+        <div className="w-65 lg:w-80 border-r border-neutral-800 bg-neutral-800 flex-shrink-0">
           <div className="p-3 border-b border-neutral-800">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium text-white">Explorer</span>
@@ -448,6 +393,7 @@ export default function Component() {
               height="100%"
               language={getLanguage()}
               theme="vs-dark"
+              onMount={handleEditorDidMount}
               value={currentFile.fileContent}
               onChange={(text) => {
                 setCurrentFile({
@@ -457,14 +403,19 @@ export default function Component() {
               }}
               options={{
                 lineNumbers: "on",
-                minimap: {
-                  enabled: false,
-                  showSlider: "mouseover",
-                  renderCharacters: false,
-                },
+                minimap: { enabled: false },
                 fontSize: 14,
                 tabSize: 2,
                 wordWrap: "off",
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                formatOnType: true,
+                formatOnPaste: true,
+                renderWhitespace: "boundary",
+                folding: true,
+                bracketPairColorization: { enabled: true },
+                autoClosingBrackets: "always",
+                matchBrackets: "always",
               }}
             />
           ) : (
@@ -502,10 +453,9 @@ export default function Component() {
             </TabsList>
           </div>
 
-          <TabsContent
-            value="terminal"
-            className="m-0 flex-1 min-h-0"
-          ></TabsContent>
+          <TabsContent value="terminal" className="m-0 flex-1 min-h-0">
+            <Textarea className="text-white"></Textarea>
+          </TabsContent>
           <TabsContent
             value="output"
             className="m-0 flex-1 min-h-0"

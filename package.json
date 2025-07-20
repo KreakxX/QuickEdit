@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@babel/parser": "^7.28.0",
+    "@babel/traverse": "^7.28.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@icons-pack/react-simple-icons": "^13.5.0",
@@ -23,6 +25,8 @@
     "@radix-ui/react-tabs": "^1.1.12",
     "@tauri-apps/api": "^2.6.0",
     "@tauri-apps/cli": "^2.6.2",
+    "@tauri-apps/plugin-dialog": "^2.3.0",
+    "@tauri-apps/plugin-fs": "^2.4.0",
     "@xterm/xterm": "^5.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -30,6 +34,7 @@
     "jszip": "^3.10.1",
     "lucide-react": "^0.525.0",
     "monaco-editor": "^0.52.2",
+    "monaco-jsx-highlighter": "^2.77.77",
     "prism-react-renderer": "^2.4.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
